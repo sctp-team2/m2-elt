@@ -39,6 +39,8 @@ DEFAULT_TARGETS = [
      "health": "/", "cloud_run": "olist-dash"},
     {"id": "streamlit",  "kind": "http", "url": os.environ.get("STREAMLIT_URL", ""),
      "health": "/_stcore/health", "cloud_run": "olist-streamlit"},
+    {"id": "streamlit-team", "kind": "http", "url": os.environ.get("STREAMLIT_TEAM_URL", ""),
+     "health": "/_stcore/health", "cloud_run": "olist-streamlit-team"},
     {"id": "wordcloud",  "kind": "http", "url": os.environ.get("WORDCLOUD_URL", ""),
      "health": "/_stcore/health", "cloud_run": "olist-wordcloud"},
     {"id": "superset",   "kind": "http", "url": os.environ.get("SUPERSET_URL", ""),

@@ -1,0 +1,53 @@
+name: Deploy Streamlit Team (Cloud Run)
+
+# Dedicated trigger for p5_analytics/streamlit_team only — fires when that subfolder
+# (or this workflow) changes on main. Builds + deploys to Cloud Run via the app's
+# own `make deploy` (service: olist-streamlit-team). Independent of the other p5 apps.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'p5_analytics/streamlit_team/**'
+      - '.github/workflows/deploy-streamlit-team.yml'
+  workflow_dispatch: {}
+
+env:
+  PROJECT: sctp-team2-project2-elt
+  REGION: us-central1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Auto-version each push: base semver from the VERSION file, + the run number for a
+      # unique, monotonic build, + the short commit SHA. e.g. 0.1.0+build.42 / a1b2c3d.
+      - name: Compute version
+        id: ver
+        working-directory: p5_analytics/streamlit_team
+        run: |
+          BASE=$(cat VERSION 2>/dev/null || echo 0.0.0)
+          SHA=$(git rev-parse --short HEAD)
+          VERSION="${BASE}+build.${GITHUB_RUN_NUMBER}"
+          BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "version=$VERSION"       >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA"               >> "$GITHUB_OUTPUT"
+          echo "build_time=$BUILD_TIME" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Deploying::olist-streamlit-team v$VERSION ($SHA)"
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build & deploy to Cloud Run
+        working-directory: p5_analytics/streamlit_team
+        run: |
+          make deploy \
+            PROJECT="$PROJECT" REGION="$REGION" \
+            VERSION="${{ steps.ver.outputs.version }}" \
+            GIT_SHA="${{ steps.ver.outputs.sha }}" \
+            BUILD_TIME="${{ steps.ver.outputs.build_time }}"

@@ -34,6 +34,7 @@ jobs:
           make deploy PROJECT="$PROJECT" REGION="$REGION" \
             DASH_URL="${{ vars.DASH_URL }}" \
             STREAMLIT_URL="${{ vars.STREAMLIT_URL }}" \
+            STREAMLIT_TEAM_URL="${{ vars.STREAMLIT_TEAM_URL }}" \
             WORDCLOUD_URL="${{ vars.WORDCLOUD_URL }}" \
             SUPERSET_URL="${{ vars.SUPERSET_URL }}" \
             DAGSTER_URL="${{ vars.DAGSTER_URL }}"
