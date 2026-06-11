@@ -1,7 +1,7 @@
 olist_dbt_test:
   outputs:
     dev:
-      dataset: bt_olist_dbt_test
+      dataset: olist_bronze_prod
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: US
