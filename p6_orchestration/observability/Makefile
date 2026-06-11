@@ -17,6 +17,7 @@ KEY_FILE   ?= secrets/sctp-team2-project2-elt-ROTATED-dbcb3cd092f4.json
 # App URLs the portal links to AND health-checks. Fill these in (or pass on the CLI).
 DASH_URL       ?=
 STREAMLIT_URL  ?=
+STREAMLIT_TEAM_URL ?=
 WORDCLOUD_URL  ?=
 SUPERSET_URL   ?=
 DAGSTER_URL    ?=
@@ -35,7 +36,8 @@ venv:
 
 run:
 	GOOGLE_APPLICATION_CREDENTIALS=$(KEY_FILE) \
-	  DASH_URL=$(DASH_URL) STREAMLIT_URL=$(STREAMLIT_URL) WORDCLOUD_URL=$(WORDCLOUD_URL) \
+	  DASH_URL=$(DASH_URL) STREAMLIT_URL=$(STREAMLIT_URL) STREAMLIT_TEAM_URL=$(STREAMLIT_TEAM_URL) \
+	  WORDCLOUD_URL=$(WORDCLOUD_URL) \
 	  SUPERSET_URL=$(SUPERSET_URL) DAGSTER_URL=$(DAGSTER_URL) PORT=$(PORT) $(PY) app.py
 
 docker-build:
@@ -44,7 +46,8 @@ docker-build:
 docker-run:
 	docker run --rm -p $(PORT):8080 -e PORT=8080 \
 	  -v $(PWD)/$(KEY_FILE):/secrets/sa.json:ro -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json \
-	  -e DASH_URL=$(DASH_URL) -e STREAMLIT_URL=$(STREAMLIT_URL) -e WORDCLOUD_URL=$(WORDCLOUD_URL) \
+	  -e DASH_URL=$(DASH_URL) -e STREAMLIT_URL=$(STREAMLIT_URL) -e STREAMLIT_TEAM_URL=$(STREAMLIT_TEAM_URL) \
+	  -e WORDCLOUD_URL=$(WORDCLOUD_URL) \
 	  -e SUPERSET_URL=$(SUPERSET_URL) -e DAGSTER_URL=$(DAGSTER_URL) $(SERVICE):local
 
 # Cloud Run deploy. The runtime SA needs read-only Cloud Run + Compute access for
@@ -54,7 +57,7 @@ deploy:
 	gcloud run deploy $(SERVICE) --image $(IMAGE) --project $(PROJECT) --region $(REGION) \
 	  --platform managed --allow-unauthenticated --memory 512Mi --cpu 1 \
 	  --service-account $(RUN_SA) \
-	  --set-env-vars GCP_PROJECT=$(PROJECT),GCP_REGION=$(REGION),GCP_ZONE=$(ZONE),DASH_URL=$(DASH_URL),STREAMLIT_URL=$(STREAMLIT_URL),WORDCLOUD_URL=$(WORDCLOUD_URL),SUPERSET_URL=$(SUPERSET_URL),DAGSTER_URL=$(DAGSTER_URL)
+	  --set-env-vars GCP_PROJECT=$(PROJECT),GCP_REGION=$(REGION),GCP_ZONE=$(ZONE),DASH_URL=$(DASH_URL),STREAMLIT_URL=$(STREAMLIT_URL),STREAMLIT_TEAM_URL=$(STREAMLIT_TEAM_URL),WORDCLOUD_URL=$(WORDCLOUD_URL),SUPERSET_URL=$(SUPERSET_URL),DAGSTER_URL=$(DAGSTER_URL)
 
 clean:
 	rm -rf __pycache__ */__pycache__

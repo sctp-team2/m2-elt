@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Olist ELT — Ops Portal</title>
+<title>Olist E-Commerce ELT Platform — Observability &amp; Operations Console</title>
 <style>
   :root {
     --bg: #0f172a; --card: #1e293b; --card2: #273449;
@@ -17,12 +17,52 @@
     line-height: 1.5;
   }
   header {
-    padding: 28px 32px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    padding: 20px 32px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(180deg, rgba(59,130,246,.06), transparent);
   }
-  header h1 { margin: 0; font-size: 22px; }
-  header .sub { color: var(--muted); font-size: 14px; }
-  header .meta { margin-left: auto; color: var(--muted); font-size: 13px; }
+  header .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  header .logo {
+    width: 42px; height: 42px; flex: 0 0 auto; border-radius: 10px;
+    display: grid; place-items: center; font-size: 22px;
+    background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+    box-shadow: 0 4px 14px rgba(14,165,233,.3);
+  }
+  header .titles { min-width: 0; }
+  header h1 { margin: 0; font-size: 20px; line-height: 1.2; letter-spacing: -.01em; }
+  header h1 .accent { color: #38bdf8; }
+  header .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  header .meta { margin-left: auto; color: var(--muted); font-size: 13px; text-align: right; }
+  header .meta .live {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--green);
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600;
+  }
+  header .meta .live::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  /* Health overview strip */
+  .overview {
+    display: grid; gap: 12px; padding: 18px 32px 4px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    max-width: 1200px; margin: 0 auto;
+  }
+  .stat {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; position: relative; overflow: hidden;
+  }
+  .stat .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); display: flex; align-items: center; gap: 7px;
+  }
+  .stat .value { font-size: 26px; font-weight: 700; margin-top: 6px; line-height: 1; }
+  .stat .swatch { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  .stat.health .value { display: flex; align-items: center; gap: 9px; }
+  .stat.ok .value { color: var(--green); }
+  .stat.bad .value { color: var(--red); }
+  .stat.warn .value { color: var(--amber); }
   main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
   h2 {
     font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
@@ -76,10 +116,41 @@
 </head>
 <body>
 <header>
-  <h1>🛰️ Olist ELT — Ops Portal</h1>
-  <span class="sub">Team 2 · project <code style="color:#cbd5e1">sctp-team2-project2-elt</code> · us-central1</span>
-  <span class="meta" id="clock"></span>
+  <div class="brand">
+    <div class="logo">🛰️</div>
+    <div class="titles">
+      <h1>Olist E-Commerce ELT Platform <span class="accent">— Observability &amp; Operations Console</span></h1>
+      <div class="sub">Team 2 · project <code style="color:#cbd5e1">sctp-team2-project2-elt</code> · region us-central1</div>
+    </div>
+  </div>
+  <div class="meta">
+    <div class="live">Live</div>
+    <div id="clock"></div>
+  </div>
 </header>
+
+<section class="overview" id="overview">
+  <div class="stat health" id="stat-health">
+    <div class="label">System Health</div>
+    <div class="value"><span class="swatch" style="background:var(--muted)"></span><span id="health-text">…</span></div>
+  </div>
+  <div class="stat ok">
+    <div class="label"><span class="swatch" style="background:var(--green)"></span>Operational</div>
+    <div class="value" id="cnt-green">0</div>
+  </div>
+  <div class="stat warn">
+    <div class="label"><span class="swatch" style="background:var(--amber)"></span>Deploying</div>
+    <div class="value" id="cnt-yellow">0</div>
+  </div>
+  <div class="stat bad">
+    <div class="label"><span class="swatch" style="background:var(--red)"></span>Down</div>
+    <div class="value" id="cnt-red">0</div>
+  </div>
+  <div class="stat">
+    <div class="label"><span class="swatch" style="background:var(--muted)"></span>Monitored</div>
+    <div class="value" id="cnt-total">0</div>
+  </div>
+</section>
 
 <main>
   <!-- ============ OBSERVABILITY ============ -->
@@ -130,6 +201,15 @@
         <a class="btn primary" href="https://olist-streamlit-cfzbsxpkgq-uc.a.run.app" target="_blank" rel="noopener">Open app ↗</a>
         <a class="btn" href="https://console.cloud.google.com/run/detail/us-central1/olist-streamlit/metrics?project=sctp-team2-project2-elt" target="_blank" rel="noopener">Metrics ↗</a>
         <a class="btn" href="https://console.cloud.google.com/run/detail/us-central1/olist-streamlit/logs?project=sctp-team2-project2-elt" target="_blank" rel="noopener">Logs ↗</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="top"><span class="dot gray" data-id="streamlit-team"></span><h3>Streamlit (Team)</h3><span class="status-label" data-label="streamlit-team"></span><span class="tag">olist-streamlit-team · :8080</span></div>
+      <div class="desc">Streamlit — 3 pain-point team deck (live BigQuery gold mart).</div>
+      <div class="links">
+        <a class="btn primary" href="https://olist-streamlit-team-513410438758.us-central1.run.app" target="_blank" rel="noopener">Open app ↗</a>
+        <a class="btn" href="https://console.cloud.google.com/run/detail/us-central1/olist-streamlit-team/metrics?project=sctp-team2-project2-elt" target="_blank" rel="noopener">Metrics ↗</a>
+        <a class="btn" href="https://console.cloud.google.com/run/detail/us-central1/olist-streamlit-team/logs?project=sctp-team2-project2-elt" target="_blank" rel="noopener">Logs ↗</a>
       </div>
     </div>
     <div class="card">
@@ -231,11 +311,39 @@
                dot.classList.add(svc.state); }
     if (label) { label.textContent = svc.detail || svc.state; }
   }
+  function updateOverview(services) {
+    var c = { green: 0, yellow: 0, red: 0, gray: 0 };
+    services.forEach(function (s) { c[s.state] = (c[s.state] || 0) + 1; });
+    document.getElementById('cnt-green').textContent = c.green;
+    document.getElementById('cnt-yellow').textContent = c.yellow;
+    document.getElementById('cnt-red').textContent = c.red;
+    document.getElementById('cnt-total').textContent = services.length;
+
+    var stat = document.getElementById('stat-health');
+    var text = document.getElementById('health-text');
+    var sw = stat.querySelector('.swatch');
+    stat.classList.remove('ok', 'bad', 'warn');
+    if (c.red > 0) {
+      stat.classList.add('bad'); text.textContent = 'Degraded';
+      sw.style.background = 'var(--red)';
+    } else if (c.yellow > 0) {
+      stat.classList.add('warn'); text.textContent = 'Updating';
+      sw.style.background = 'var(--amber)';
+    } else if (c.green > 0) {
+      stat.classList.add('ok'); text.textContent = 'All Systems Operational';
+      sw.style.background = 'var(--green)';
+    } else {
+      text.textContent = 'Unknown'; sw.style.background = 'var(--muted)';
+    }
+  }
+
   function poll() {
     fetch('/api/status', { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        (data.services || []).forEach(applyStatus);
+        var services = data.services || [];
+        services.forEach(applyStatus);
+        updateOverview(services);
         var note = document.getElementById('auth-note');
         if (note) {
           note.textContent = data.auth === 'degraded'

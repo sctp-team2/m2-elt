@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.streamlit/secrets.toml
+secrets/
+*.json
+notes/
+README.md
