@@ -1,0 +1,12 @@
+olist_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      # project: sctp-team2-project2-elt
+      project: western-beanbag-496804-a4 
+      dataset: olist
+      location: US
+      threads: 4
+      timeout_seconds: 300

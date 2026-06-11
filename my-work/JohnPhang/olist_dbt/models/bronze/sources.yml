@@ -2,7 +2,8 @@ version: 2
 
 sources:
   - name: olist_bronze
-    database: sctp-team2-project2-elt
+    # database: sctp-team2-project2-elt  # Team database
+    database: western-beanbag-496804-a4  # Personal database
     schema: olin_bronze
     tables:
       - name: oltp_olist_customers
