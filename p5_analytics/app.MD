@@ -11,6 +11,7 @@ data contract) — never silver or raw.
 | **Dash** | http://localhost:8050 | https://olist-dash-513410438758.us-central1.run.app |
 | **Superset** | http://localhost:8088 | https://olist-superset-513410438758.us-central1.run.app |
 | **Streamlit** | http://localhost:8501 | https://olist-streamlit-513410438758.us-central1.run.app |
+| **Streamlit (Team)** | http://localhost:8501 | https://olist-streamlit-team-513410438758.us-central1.run.app |
 
 > Superset login: **team2** / **password**
 
@@ -23,6 +24,7 @@ data contract) — never silver or raw.
 | **Executive Dashboard** | [`dash/`](dash/) | Plotly **Dash** + dash-mantine-components | **Cloud Run** (us-central1) | ✅ **Live** | **https://olist-dash-513410438758.us-central1.run.app** |
 | **BI Dashboard** | [`superset/`](superset/) | Apache **Superset** | **Cloud Run** (us-central1) | ✅ **Live** | **https://olist-superset-513410438758.us-central1.run.app** |
 | **Quick App** | [`streamlit/`](streamlit/) | **Streamlit** | **Cloud Run** (us-central1) | ✅ **Live** | **https://olist-streamlit-513410438758.us-central1.run.app** |
+| **Team Deck** | [`streamlit_team/`](streamlit_team/) | **Streamlit** (multipage, live BQ) | **Cloud Run** (us-central1) | ✅ **Live** | **https://olist-streamlit-team-513410438758.us-central1.run.app** |
 
 ---
 

@@ -16,6 +16,7 @@ on:
     workflows:
       - "Build & deploy Dagster to prod"
       - "Deploy Streamlit (Cloud Run)"
+      - "Deploy Streamlit Team (Cloud Run)"
       - "Deploy Dash (Cloud Run)"
       - "Deploy Superset (Cloud Run)"
       - "Deploy Wordcloud (Cloud Run)"
