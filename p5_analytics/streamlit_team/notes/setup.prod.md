@@ -61,7 +61,28 @@ gcloud projects add-iam-policy-binding sctp-team2-project2-elt \
 Without the role the page still works — it falls back to Portuguese terms with a warning
 (`lib/translate.py` + the try/except in `pages/4_Voice_of_Customer.py`).
 
-## 6. Notes
+## 6. Performance (cold first load)
+
+The first page view per instance/cache-window pulls ~99k order-grain rows. Two levers
+(2026-06-11):
+
+- **BigQuery Storage Read API** — `google-cloud-bigquery-storage` in requirements.txt
+  makes `to_dataframe()` stream Arrow instead of paginating REST: measured **59s → 4s**
+  for the orders pull. Needs `roles/bigquery.readSessionUser` on the runtime SA
+  (granted):
+  ```bash
+  gcloud projects add-iam-policy-binding sctp-team2-project2-elt \
+    --member="serviceAccount:513410438758-compute@developer.gserviceaccount.com" \
+    --role="roles/bigquery.readSessionUser" --condition=None
+  ```
+- Remaining cold-start cost is the Cloud Run container boot after scale-to-zero. If that
+  matters for a demo, pin a warm instance (adds idle cost):
+  `gcloud run services update olist-streamlit-team --region us-central1 --min-instances 1`
+
+Redis/Memorystore is **not** needed: `st.cache_data` already memoizes per instance for
+1h, traffic is single-instance, and the bottleneck was transfer speed, not cache misses.
+
+## 7. Notes
 - No keyfile in the image — production auth is the Cloud Run service account (ADC). The
   `.dockerignore` excludes `secrets/` and `*.json` so a local key never ships.
 - `.gcloudignore` keeps `.venv/` out of the Cloud Build upload (added 2026-06-11).

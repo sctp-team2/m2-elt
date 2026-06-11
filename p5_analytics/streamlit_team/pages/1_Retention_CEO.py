@@ -86,9 +86,9 @@ col_mix, col_pay = st.columns(2)
 
 with col_mix:
     st.subheader("Customer mix")
-    delivered = orders[orders["order_status"] == "delivered"]
-    per_cust_d = delivered.groupby("customer_unique_id")["order_id"].nunique()
-    mix = (per_cust_d == 1).map({True: "First-Time Customer", False: "Repeat Customer"}) \
+    # Same per_customer series as the header KPIs, so the two bars sum exactly to
+    # the "Unique customers" metric above.
+    mix = (per_customer == 1).map({True: "First-Time Customer", False: "Repeat Customer"}) \
         .value_counts().rename_axis("customer_type").reset_index(name="total_customers")
     mix["pct"] = mix["total_customers"] / mix["total_customers"].sum() * 100
 
@@ -101,7 +101,8 @@ with col_mix:
     fig.update_layout(height=420, yaxis_title="Unique customers",
                       margin=dict(t=30, b=10), yaxis_range=[0, mix["total_customers"].max() * 1.15])
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("🔍 Delivered orders only. The repeat segment is a rounding error of the base.")
+    st.caption("🔍 All orders — bars sum to the unique-customer KPI above. The repeat "
+               "segment is a rounding error of the base.")
 
 with col_pay:
     st.subheader("GMV share by payment type")

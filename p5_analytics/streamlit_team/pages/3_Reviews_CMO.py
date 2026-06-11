@@ -254,31 +254,75 @@ def brazil_geojson() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@st.cache_data(show_spinner=False)
+def state_centroids() -> dict:
+    """Label anchor (lon, lat) per state — area centroid of its largest polygon
+    (shoelace formula), so the notebook's geopandas `.centroid` labels work
+    without a geopandas dependency."""
+    cents: dict[str, tuple[float, float]] = {}
+    for feat in brazil_geojson()["features"]:
+        geom = feat["geometry"]
+        polys = [geom["coordinates"]] if geom["type"] == "Polygon" else geom["coordinates"]
+        best_area, best = 0.0, None
+        for poly in polys:
+            ring = poly[0]  # exterior ring of [lon, lat] pairs
+            a = cx = cy = 0.0
+            for (x1, y1), (x2, y2) in zip(ring, ring[1:]):
+                cross = x1 * y2 - x2 * y1
+                a += cross
+                cx += (x1 + x2) * cross
+                cy += (y1 + y2) * cross
+            if a == 0:
+                continue
+            if abs(a) > best_area:
+                best_area, best = abs(a), (cx / (3 * a), cy / (3 * a))
+        if best:
+            cents[feat["properties"]["sigla"]] = best
+    return cents
+
+
 gj = brazil_geojson()
+cents = state_centroids()
+
+
+def state_map(values: "pd.Series", fmt: str, colorscale: str, title: str, cbar: str,
+              suffix: str = ""):
+    """Choropleth + a state label (sigla, value) at each state's centroid,
+    matching the annotated geopandas maps in the notebook."""
+    fig = px.choropleth(
+        geo, geojson=gj, locations="customer_state",
+        featureidkey="properties.sigla", color=values.name,
+        color_continuous_scale=colorscale, hover_data={"total_orders": ":,"},
+    )
+    labelled = geo[geo["customer_state"].isin(cents)]
+    fig.add_scattergeo(
+        lon=[cents[s][0] for s in labelled["customer_state"]],
+        lat=[cents[s][1] for s in labelled["customer_state"]],
+        text=[f"{s}<br>{v:{fmt}}{suffix}" for s, v in
+              zip(labelled["customer_state"], labelled[values.name])],
+        mode="text", textfont=dict(size=9, color="black"),
+        hoverinfo="skip", showlegend=False,
+    )
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(height=480, margin=dict(t=40, b=0, l=0, r=0),
+                      title=title, coloraxis_colorbar_title=cbar)
+    return fig
+
 
 col_rev, col_delay = st.columns(2)
 with col_rev:
-    fig = px.choropleth(
-        geo, geojson=gj, locations="customer_state",
-        featureidkey="properties.sigla", color="avg_review_score",
-        color_continuous_scale="RdYlGn", hover_data={"total_orders": ":,"},
+    st.plotly_chart(
+        state_map(geo["avg_review_score"], ".2f", "RdYlGn",
+                  "Avg review score by state", "★"),
+        use_container_width=True,
     )
-    fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(height=480, margin=dict(t=40, b=0, l=0, r=0),
-                      title="Avg review score by state",
-                      coloraxis_colorbar_title="★")
-    st.plotly_chart(fig, use_container_width=True)
 with col_delay:
-    fig = px.choropleth(
-        geo, geojson=gj, locations="customer_state",
-        featureidkey="properties.sigla", color="avg_delay_days",
-        color_continuous_scale="RdYlGn_r", hover_data={"total_orders": ":,"},
+    st.plotly_chart(
+        state_map(geo["avg_delay_days"], ".1f", "RdYlGn_r",
+                  "Avg delivery delay (days vs estimate) by state", "days",
+                  suffix="d"),
+        use_container_width=True,
     )
-    fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(height=480, margin=dict(t=40, b=0, l=0, r=0),
-                      title="Avg delivery delay (days vs estimate) by state",
-                      coloraxis_colorbar_title="days")
-    st.plotly_chart(fig, use_container_width=True)
 st.caption(
     "🔍 The two maps are near mirror images: the states delivered latest (vs estimate) "
     "are the states that score lowest. Geography confirms the causal chain."
