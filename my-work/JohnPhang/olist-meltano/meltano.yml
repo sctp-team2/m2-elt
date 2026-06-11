@@ -105,8 +105,8 @@ plugins:
       variant: z3z1ma
       pip_url: git+https://github.com/z3z1ma/target-bigquery.git setuptools<80
       config:
-        project: sctp-team2-project2-elt
-        # project: western-beanbag-496804-a4 # johnphs GCP project
+        # project: sctp-team2-project2-elt
+        project: western-beanbag-496804-a4 # johnphs GCP project
         dataset: olin_bronze
         credentials_path: ${GOOGLE_APPLICATION_CREDENTIALS}
         location: US
