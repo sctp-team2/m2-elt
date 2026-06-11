@@ -1,7 +1,7 @@
-olist_dbt_test:
+b_ecommerce:
   outputs:
     dev:
-      dataset: olist_bronze_prod
+      dataset: b_ecommerce_mart
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: US

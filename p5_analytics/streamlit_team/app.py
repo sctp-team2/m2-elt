@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from lib import bq, config
+from lib import bq, config, version
 
 st.set_page_config(
     page_title="Olist · Team Deck",
@@ -24,6 +24,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# --- Version / build provenance in the sidebar (set at deploy by CI) ----------
+with st.sidebar:
+    st.caption(version.short())
+    with st.expander("About this build"):
+        st.markdown(version.full())
 
 st.title("📦 Olist — One Elephant, Three Pain Points")
 st.caption(f"Gold mart: `{config.GCP_PROJECT}.{config.GOLD_DATASET}` · "

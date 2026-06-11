@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: olist_source
+    database: sctp-team2-project2-elt  # Put your GCP Project ID here
+    dataset: brazil_ecommerce_raw_JF             # Put your raw BigQuery dataset name here
+
+    tables:
+      - name: public_olist_customers_raw
+        description: "Customer data containing unique IDs and location states."
+        tests:
+          - unique:
+              column_name: customer_id
+          - not_null:
+              column_name: customer_id
+
+      - name: public_olist_orders_raw
+        description: "Core order tracking table containing status and timestamps."
+        tests:
+          - unique:
+              column_name: order_id
+          - not_null:
+              column_name: order_id
+
+      - name: public_olist_order_items_raw
+        description: "Items contained within each order basket, pricing, and shipping targets."
+
+      - name: public_olist_order_payments_raw
+        description: "Payment types (credit card, voucher, boleto) and voucher installments."
+
+      - name: public_olist_order_reviews_raw
+        description: "Customer satisfaction scores and written text feedback comments."
+
+      - name: public_olist_products_raw
+        description: "Product attributes such as weight, dimensions, and Portuguese category names."
+        tests:
+          - unique:
+              column_name: product_id
+          - not_null:
+              column_name: product_id
+
+      - name: public_olist_sellers_raw
+        description: "Seller metadata tracking supplier locations."
+        tests:
+          - unique:
+              column_name: seller_id
+          - not_null:
+              column_name: seller_id
+
+      - name: public_olist_geolocation_raw
+        description: "Zip code prefix mapping to latitude and longitude coordinates."
+
+      - name: public_product_category_name_translation_raw
+        description: "Crosswalk table translating Portuguese category names into English."

@@ -5,7 +5,14 @@ PROJECT    ?= sctp-team2-project2-elt
 REGION     ?= us-central1
 REPO       ?= olist-elt
 SERVICE    ?= olist-streamlit-team
-IMAGE      ?= $(REGION)-docker.pkg.dev/$(PROJECT)/$(REPO)/$(SERVICE):latest
+# Versioning: semantic version from the VERSION file, plus the short git SHA so every
+# image is traceable. CI overrides GIT_SHA/BUILD_TIME; locally they fall back to git.
+VERSION    ?= $(shell cat VERSION 2>/dev/null || echo 0.0.0)
+GIT_SHA    ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
+BUILD_TIME ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+# Docker tags can't contain '+', so swap it for '_' (e.g. 0.1.0+build.42 -> 0.1.0_build.42).
+TAG        ?= $(subst +,_,$(VERSION))-$(GIT_SHA)
+IMAGE      ?= $(REGION)-docker.pkg.dev/$(PROJECT)/$(REPO)/$(SERVICE):$(TAG)
 PORT       ?= 8501
 PY         ?= .venv/bin/python
 
@@ -33,7 +40,8 @@ docker-run:
 deploy:
 	gcloud builds submit --tag $(IMAGE) --project $(PROJECT) .
 	gcloud run deploy $(SERVICE) --image $(IMAGE) --project $(PROJECT) --region $(REGION) \
-	  --platform managed --allow-unauthenticated --memory 1Gi --cpu 1 --port 8080
+	  --platform managed --allow-unauthenticated --memory 1Gi --cpu 1 --port 8080 \
+	  --set-env-vars APP_VERSION=$(VERSION),GIT_SHA=$(GIT_SHA),BUILD_TIME=$(BUILD_TIME)
 
 clean:
 	rm -rf __pycache__ */__pycache__ lib/__pycache__ pages/__pycache__
