@@ -1,12 +1,15 @@
-"""Olist Gold Mart — Team Executive Deck (Streamlit, multipage skeleton).
+"""Olist Gold Mart — Team Executive Deck (Streamlit, multipage).
 
-One connected story told through three pain points, one page each:
+One connected story told through three pain points, one page each, plus the
+qualitative evidence and the synthesis:
 
   1. Customer Retention            (CEO)   — owners: Jun, Jenn Fang
   2. Operational Performance       (COO)   — owners: John, Chun Wei, Charmaine
   3. Reviews & the Revenue Leak    (CMO)   — owners: Bryan, Soon Meng
+  4. Voice of the Customer         — review free-text analysis (word clouds)
+  5. Summary                       — the causal chain, diagnosis & recommendations
 
-This is the HOME page (the landing tab). Each pain point lives under ``pages/`` and is
+This is the HOME page (the landing tab). Each page lives under ``pages/`` and is
 selectable from the left sidebar — Streamlit builds the nav automatically.
 
 Run locally:   streamlit run app.py            # → http://localhost:8501
@@ -32,12 +35,11 @@ with st.sidebar:
         st.markdown(version.full())
 
 st.title("📦 Olist — One Elephant, Three Pain Points")
-st.caption(f"Gold mart: `{config.GCP_PROJECT}.{config.GOLD_DATASET}` · "
-           "skeleton deck — fill in the analysis per page")
+st.caption(f"Gold mart: `{config.GCP_PROJECT}.{config.GOLD_DATASET}` · live BigQuery")
 
 st.markdown(
     """
-> **The thesis (to be proven page by page):** the company is *buying* growth it should
+> **The thesis (proven page by page):** the company is *buying* growth it should
 > be *earning*. The binding constraint is the **repeat-purchase rate**, and the upstream
 > cause is **delivery experience → review scores**. Three leaders each see one face of
 > the same problem.
@@ -73,6 +75,23 @@ with c3:
         "**Owners:** Bryan · Soon Meng"
     )
     st.page_link("pages/3_Reviews_CMO.py", label="→ Open Pain Point 3", icon="⭐")
+
+# --- Evidence + synthesis -------------------------------------------------------
+c4, c5 = st.columns(2)
+with c4:
+    st.subheader("4 · Voice of the Customer")
+    st.markdown(
+        "What customers actually *say* — word clouds and n-grams over the review "
+        "free text. The negative cloud is delivery language, verbatim."
+    )
+    st.page_link("pages/4_Voice_of_Customer.py", label="→ Open the text analysis", icon="💬")
+with c5:
+    st.subheader("5 · Summary — the diagnosis")
+    st.markdown(
+        "The three pain points are one causal chain: **late delivery → low review → "
+        "no second purchase → growth must be bought**. Numbers, chain, recommendations."
+    )
+    st.page_link("pages/5_Summary.py", label="→ Open the summary", icon="🐘")
 
 st.divider()
 

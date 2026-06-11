@@ -44,8 +44,37 @@ gcloud run services update olist-streamlit-team --region us-central1 \
 Open the Service URL, then the **Home** page → **Test gold-mart connection** should report
 the attached service account. Each pain-point page loads its KPI query live.
 
-## 5. Notes
+## 5. Translation (English mode on the Voice-of-Customer page)
+
+The page's **Language → English (translated)** toggle calls the Cloud Translation API.
+The service runs as the **default compute SA** (`513410438758-compute@developer.gserviceaccount.com`),
+which holds the BigQuery roles (§1) and — granted 2026-06-11 for this feature —
+`roles/cloudtranslate.user`:
+
+```bash
+gcloud services enable translate.googleapis.com --project sctp-team2-project2-elt   # already enabled (wordcloud app)
+gcloud projects add-iam-policy-binding sctp-team2-project2-elt \
+  --member="serviceAccount:513410438758-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudtranslate.user" --condition=None
+```
+
+Without the role the page still works — it falls back to Portuguese terms with a warning
+(`lib/translate.py` + the try/except in `pages/4_Voice_of_Customer.py`).
+
+## 6. Notes
 - No keyfile in the image — production auth is the Cloud Run service account (ADC). The
   `.dockerignore` excludes `secrets/` and `*.json` so a local key never ships.
+- `.gcloudignore` keeps `.venv/` out of the Cloud Build upload (added 2026-06-11).
 - Query results are cached in-app for 1h (`lib/bq.py`), so BigQuery cost stays trivial.
 - After deploying, update the status table in `../app.MD` with the new Service URL.
+
+## Deployed (2026-06-11)
+
+| | |
+|---|---|
+| Cloud Run service | `olist-streamlit-team` (us-central1) |
+| Live URL | https://olist-streamlit-team-513410438758.us-central1.run.app |
+| Revision | `olist-streamlit-team-00003-4xf` (100% traffic) |
+| Image tag | `0.1.0-fabe305` |
+| Runtime SA | `513410438758-compute@developer.gserviceaccount.com` (BQ read/job + cloudtranslate.user) |
+| Pages | Home + PP1/PP2/PP3 + Voice of Customer + Summary (live BQ, 1h cache) |
