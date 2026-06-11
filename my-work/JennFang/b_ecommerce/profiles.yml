@@ -1,0 +1,13 @@
+b_ecommerce:
+  outputs:
+    dev:
+      dataset: b_ecommerce_mart
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: US
+      method: oauth
+      priority: interactive
+      project: sctp-team2-project2-elt
+      threads: 1
+      type: bigquery
+  target: dev
