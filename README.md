@@ -51,7 +51,7 @@ p6_orchestration      →  Dagster runs the whole chain on a schedule
 | `p1_el/` | M1 Ingestion | John / Bryan | bronze raw tables (dlt + meltano) |
 | `p1_el/bronze/` | M1 (tier) | John / Bryan | bronze tier contract/docs |
 | `p2_warehouse_design/` | M2 Design | Charmaine / Soon Meng | ERD + star schema spec |
-| `p3_dbt_project/` | M3 ELT | **Hoong Jun** / Bryan | silver + gold models |
+| `p3_dbt_project/` | M3 ELT | Hoong Jun / Charmaine | silver + gold models |
 | `p3_dbt_project/models/silver/` | M3 | Hoong Jun / Bryan | silver_commerce.* |
 | `p3_dbt_project/models/gold/` | M3 | Hoong Jun / Bryan | gold_commerce.* (Iceberg) |
 | `p3_dbt_project/macros/cross_db/` | M3 | Hoong Jun | migration-seam macros |
