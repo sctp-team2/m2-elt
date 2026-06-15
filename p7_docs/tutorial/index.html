@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olist ELT Academy — SCTP Team 2 Tutorial</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">🎓</div>
+        <div>
+          <h1>Olist ELT Academy</h1>
+          <p class="tagline">SCTP Team 2 · Module 2</p>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="search" id="search-input" placeholder="Search lessons… ( / )" autocomplete="off">
+      </div>
+
+      <div class="overall-progress">
+        <div class="progress-label">
+          <span>Overall progress</span>
+          <span id="overall-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="overall-fill"></div></div>
+      </div>
+
+      <nav class="lesson-nav" id="lesson-nav"><!-- built by app.js --></nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" id="theme-toggle" title="Toggle dark mode">🌙</button>
+        <button class="btn-ghost" id="reset-progress" title="Reset all progress">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main" id="main">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
+      <div class="content" id="content"><!-- lesson rendered here --></div>
+    </main>
+  </div>
+
+  <!-- libs (CDN; app degrades gracefully offline) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <!-- lesson registry -->
+  <script>window.TUTORIAL_LESSONS = [];</script>
+
+  <!-- lessons (order here doesn't matter; sorted by `order` field) -->
+  <script src="js/lessons/00-welcome.js"></script>
+  <script src="js/lessons/01-big-picture.js"></script>
+  <script src="js/lessons/02-setup.js"></script>
+  <script src="js/lessons/03-extract-load.js"></script>
+  <script src="js/lessons/04-warehouse-design.js"></script>
+  <script src="js/lessons/05-dbt-stage.js"></script>
+  <script src="js/lessons/06-dbt-gold.js"></script>
+  <script src="js/lessons/07-data-quality.js"></script>
+  <script src="js/lessons/08-orchestration.js"></script>
+  <script src="js/lessons/09-deployment.js"></script>
+  <script src="js/lessons/10-business-context.js"></script>
+  <script src="js/lessons/11-kpis.js"></script>
+  <script src="js/lessons/12-insights.js"></script>
+  <script src="js/lessons/13-dashboards.js"></script>
+  <script src="js/lessons/14-capstone.js"></script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
