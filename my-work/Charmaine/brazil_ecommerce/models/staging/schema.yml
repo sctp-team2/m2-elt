@@ -1,0 +1,78 @@
+version: 2
+
+# Staging = 1:1 dedup of bronze. Tests assert each PK is unique + not_null,
+# which is exactly what the dedup guarantees. Business-logic tests live in gold_mart.
+
+models:
+  - name: stg_customers
+    description: "Deduplicated, one row per customer_id (no nulls). Cleaned."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        data_tests: [unique, not_null]
+
+  - name: stg_orders
+    description: "Deduplicated, one row per order_id (no nulls). Cleaned"
+    columns:
+      - name: order_id
+        description: "One of composite Primary Key."
+        data_tests: [unique, not_null]
+#      - name: order_item_id
+#        description: "Part of the composite PK (line number within the order)."
+#      - name: payment_sequential
+#        description: "Part of the composite PK (payment number within the order)."
+
+  - name: stg_reviews
+    description: "Deduplicated, one row per review_id (no nulls). Cleaned."
+    columns:
+      - name: review_id
+        description: "Primary key."
+        data_tests: [unique, not_null]
+        #logic
+      - name: review_score
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 5
+
+  - name: stg_products
+    description: "Deduplicated, one row per product_id (no nulls). Cleaned."
+    columns:
+      - name: product_id
+        description: "Primary key."
+        data_tests: [unique, not_null]
+
+  - name: stg_sellers
+    description: "Deduplicated, one row per seller_id (no nulls). Cleaned."
+    columns:
+      - name: seller_id
+        description: "Primary key."
+        data_tests: [unique, not_null]
+
+  - name: stg_geolocation
+    description: "No deduplication. No nulls. Cleaned."
+    columns:
+      - name: geolocation_zip_code_prefix
+        description: "Primary key (collapsed to one lat/lng per zip)."
+
+  - name: stg_order_items
+    description: "No deduplication. No nulls. Cleaned."
+    columns:
+      - name: order_id
+        description: "One of composite Primary Key."
+      - name: order_item_id
+        description: "Part of the composite PK (line number within the order)."
+
+  - name: stg_order_payments
+    description: "No deduplication. No nulls. Cleaned."
+    columns:
+      - name: order_id
+        description: "One of composite Primary Key."
+      - name: payment_sequential
+        description: "Part of the composite PK (payment number within the order)."
+
+# No tests on stg_order_items and stg_order_payments because 
+# they will be merged with stg_orders in gold_mart, and the business-logic tests will be there.
+
+# No tests on stg_geolocation because it will be merged with stg_customers/sellers in gold_mart, 
+# and the business-logic tests will be there.
