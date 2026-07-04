@@ -8,6 +8,10 @@ Tell the story of the whole project: technical documentation, architecture diagr
 - Outputs from every module: EL scripts, ERD, dbt models/lineage, QA report, analytics insights, orchestration graph.
 
 ## Produces (outputs)
+- **[`tutorial/`](tutorial/README.md)** — 🎓 the **Olist ELT Academy**, an interactive
+  step-by-step tutorial webapp covering the entire project (technical + business tracks,
+  15 lessons, quizzes, progress tracking). Run with
+  `cd p7_docs/tutorial && python3 -m http.server 8080`.
 - **`architecture.drawio`** — the pipeline architecture diagram.
 - **`final_report.md`** — technical approach, tool-choice justifications (why dlt over Meltano, why Iceberg, why Dagster), schema-design rationale, and findings.
 - **Slide deck** — exec summary → business value → architecture → insights → risks → roadmap.
