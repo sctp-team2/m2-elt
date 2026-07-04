@@ -43,6 +43,7 @@
 
 # Data
 **/data/
+*.csv
 
 # dbt / dagster / meltano build artifacts
 **/target/
